@@ -1,0 +1,30 @@
+* {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+body
+{
+    header {
+        height: 50px;
+
+        nav {
+            height: 100%;
+
+            div,
+            container-fluid {
+                height: 100%;
+                border-radius: 10;
+            }
+        }
+    }
+}
+main {
+    padding: 20px;
+    margin-top: 50px;
+}
+.container-fluid {
+    padding: 0;
+    
+}

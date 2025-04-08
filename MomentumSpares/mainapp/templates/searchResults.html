@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block title %}
+Search |{{query}}
+{% endblock %}
+
+{% block content %}
+
+<h2>Search Results for {{query}}</h2>
+<div class="container-fluid">
+    <table class="table">
+        <thead>
+            <th>Id</th>
+            <th>Name</th>
+            <th>Price</th>
+            <th>Description</th>
+            <th>Pic path</th>
+            <th>Thumbnail</th>
+            <th>Stock</th>
+        </thead>
+        {% for product in items %}
+            <tr>
+                <td>{{product.id}}</td>
+                <td>
+                    <a href="{% url 'product_details' product.id %}">
+                        {{product.name}}
+                    </a>
+                </td>
+                <td>{{product.price}}</td>
+                <td>{{product.desc}}</td>
+                <td>{{product.pic.url}}</td>
+                <td><img src = "{{product.pic.url}}" height="20px" alt="image not found"></td>
+                <td>{{product.stock}}</td>
+            </tr>
+        {%endfor%}
+    </table>
+</div>
+{%endblock%}

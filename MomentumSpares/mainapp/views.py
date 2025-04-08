@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect, get_object_or_404
 from .models import Product
 # importing url resolution function
 from django.urls import  reverse,reverse_lazy
@@ -12,8 +12,11 @@ from django.http import HttpResponse
 
 # importing the generic class based views for CRUD operations
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
+from django.views import View
+
 # Create your views here.
-def homeView(request):
+def home(request):
+    return render(request, 'home.html')
     #querying the database and getting a collection of products class objecs from the records
     products = Product.objects.all()
 
@@ -52,7 +55,7 @@ class AddProducts(CreateView):
     model = Product
     fields = ['name', 'price', 'desc', 'pic', 'stock']
     template_name = 'addproduct.html'
-    success_url = reverse_lazy('homepage')
+    success_url = reverse_lazy('homepage')  
 
 #read - show details of  each product
 class ProductDetails(DetailView):
@@ -93,3 +96,26 @@ def searchView(request):
     }
     template = loader.get_template('searchResults.html')
     return HttpResponse(template.render(context, request))
+
+def home(request):
+    products = Product.objects.all()  # Fetch all products from the database
+    context = {
+        'product_list': products,  # Pass the product list to the template
+        'current_page': 'home'  # Set the current page for navigation
+    }
+
+    return render(request, 'home.html', context)  # Ensure 'home.html' exists in your templates folder
+
+def about(request):
+    return render(request, 'about.html')  # Add this view
+
+def add_to_cart(request, product_id):
+    product = get_object_or_404(Product, id=product_id)
+    # Logic to add the product to the cart (e.g., session or database)
+    # For now, redirect back to the homepage or another page
+    return redirect('homepage')
+
+def view_cart(request):
+    # Logic to retrieve cart items (e.g., from session or database)
+    cart_items = []  # Replace with actual cart retrieval logic
+    return render(request, 'cart.html', {'cart_items': cart_items})

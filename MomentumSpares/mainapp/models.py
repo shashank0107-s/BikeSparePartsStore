@@ -13,3 +13,5 @@ class Product(models.Model):
     stock = models.PositiveIntegerField(default=1)
 
 
+   
+

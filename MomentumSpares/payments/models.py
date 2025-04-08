@@ -3,12 +3,18 @@ from orders.models import Order
 from django.utils.timezone import now
 
 class Payment(models.Model):
-    order = models.OneToOneField(Order, on_delete=models.CASCADE, related_name="payment_payment")
-    razorpay_order_id = models.CharField(max_length=100)
-    status = models.CharField(max_length=20, default="PENDING")
+    order = models.OneToOneField(Order, on_delete=models.CASCADE, related_name="payment")
+    razorpay_order_id = models.CharField(max_length=255)
+    status = models.CharField(
+        max_length=20,
+        choices=[('PENDING', 'Pending'), ('COMPLETED', 'Completed'), ('FAILED', 'Failed')],
+        default='PENDING'
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return f"Payment for Order {self.order.id}"
+        return f"Payment for Order #{self.order.id}"
 
 class PaymentAttempt(models.Model):
     payment = models.ForeignKey(Payment, on_delete=models.CASCADE, related_name="attempts")

@@ -1,10 +1,8 @@
 from django import forms
-
+from .models import Address, Order
 
 class AddressForm(forms.ModelForm):
     class Meta:
-        # Import Address locally to avoid circular dependency
-        from .models import Address
         model = Address
         fields = [
             "full_name",
@@ -46,8 +44,6 @@ class AddressForm(forms.ModelForm):
 
 class OrderForm(forms.ModelForm):
     class Meta:
-        # Import Order locally to avoid circular dependency
-        from .models import Order
         model = Order
         fields = ["address", "status"]
         widgets = {

@@ -57,16 +57,18 @@ MIDDLEWARE = [
 ROOT_URLCONF = 'MomentumSpares.urls'
 
 TEMPLATES = [
+    
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
-        'APP_DIRS': True,
+        'DIRS': [],  # Add custom template directories here if needed
+        'APP_DIRS': True,  # This must be True to load templates from app directories
         'OPTIONS': {
             'context_processors': [
                 'django.template.context_processors.debug',
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                
             ],
         },
     },
@@ -110,7 +112,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Kolkata'  # Change to your local time zone
 
 USE_I18N = True
 
@@ -120,18 +122,13 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
-STATIC_URL = 'static/'
-STATICFILES_DIRS = [
-    BASE_DIR / 'static'
-]
+STATIC_URL = '/static/'
+STATICFILES_DIRS = [BASE_DIR / "static"]  # Optional: Add your static files directory
+STATIC_ROOT = BASE_DIR / "staticfiles"  # For `collectstatic`
 
-# configring the user-uploaded media storage location
-# in development server, we are going to use the local folder inside the project
-# to store the media when deploying we can replace the filepath
-# with a url to the media server
-
-MEDIA_ROOT = BASE_DIR / 'media'
-MEDIA_URL = '/'
+# Media files (Uploaded files)
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / "media"
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
@@ -150,5 +147,3 @@ RAZORPAY_KEY_SECRET = "TYlF7oiBO8sA4Jx0zML9kVsv"  # Replace with your Key Secret
 CSRF_TRUSTED_ORIGINS = [
     'https://api.razorpay.com',  # Add Razorpay's domain
 ]
-TIME_ZONE = 'Asia/Kolkata'  # Change to your local time zone
-USE_TZ = True

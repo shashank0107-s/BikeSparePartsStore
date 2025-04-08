@@ -1,174 +1,111 @@
-import razorpay
-from django.conf import settings
-from django.shortcuts import render, redirect, get_object_or_404
-from django.http import JsonResponse
-from django.contrib.auth.decorators import login_required
-from django.views.decorators.csrf import csrf_exempt
-
 from django.db import models
+from django.conf import settings
 from django.contrib.auth.models import User
-
-# Initialize Razorpay client
-client = razorpay.Client(auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET))
+from cart.models import CartItem
+from mainapp.models import Product
+from django.core.validators import RegexValidator
 
 class Address(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    full_name = models.CharField(max_length=255)
-    phone_number = models.CharField(max_length=15)
-    address_line1 = models.CharField(max_length=255)
-    address_line2 = models.CharField(max_length=255, blank=True, null=True)
-    landmark = models.CharField(max_length=255, blank=True, null=True)
-    city = models.CharField(max_length=100)
-    state = models.CharField(max_length=100)
-    pincode = models.CharField(max_length=6)
-    is_default = models.BooleanField(default=False)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="addresses")
+    full_name = models.CharField(max_length=100, help_text="Full name of the recipient")
+    phone_number = models.CharField(
+        max_length=10,
+        validators=[
+            RegexValidator(r'^\d{10}$', message="Phone number must be 10 digits long.")
+        ],
+        help_text="Recipient's phone number"
+    )
+    address_line1 = models.CharField(max_length=255, help_text="Street address, P.O. Box, etc.")
+    address_line2 = models.CharField(
+        max_length=255, blank=True, null=True, help_text="Apartment, suite, unit, building, floor, etc."
+    )
+    landmark = models.CharField(
+        max_length=255, blank=True, null=True, help_text="Landmark near the address"
+    )
+    city = models.CharField(max_length=100, help_text="City name")
+    state = models.CharField(
+        max_length=100,
+        help_text="State name",
+        choices=[
+    ("Andhra Pradesh", "Andhra Pradesh"),
+    ("Arunachal Pradesh", "Arunachal Pradesh"),
+    ("Assam", "Assam"),
+    ("Bihar", "Bihar"),
+    ("Chhattisgarh", "Chhattisgarh"),
+    ("Goa", "Goa"),
+    ("Gujarat", "Gujarat"),
+    ("Haryana", "Haryana"),
+    ("Himachal Pradesh", "Himachal Pradesh"),
+    ("Jharkhand", "Jharkhand"),
+    ("Karnataka", "Karnataka"),
+    ("Kerala", "Kerala"),
+    ("Madhya Pradesh", "Madhya Pradesh"),
+    ("Maharashtra", "Maharashtra"),
+    ("Manipur", "Manipur"),
+    ("Meghalaya", "Meghalaya"),
+    ("Mizoram", "Mizoram"),
+    ("Nagaland", "Nagaland"),
+    ("Odisha", "Odisha"),
+    ("Punjab", "Punjab"),
+    ("Rajasthan", "Rajasthan"),
+    ("Sikkim", "Sikkim"),
+    ("Tamil Nadu", "Tamil Nadu"),
+    ("Telangana", "Telangana"),
+    ("Tripura", "Tripura"),
+    ("Uttar Pradesh", "Uttar Pradesh"),
+    ("Uttarakhand", "Uttarakhand"),
+    ("West Bengal", "West Bengal"),
+    # Union Territories
+    ("Andaman and Nicobar Islands", "Andaman and Nicobar Islands"),
+    ("Chandigarh", "Chandigarh"),
+    ("Dadra and Nagar Haveli and Daman and Diu", "Dadra and Nagar Haveli and Daman and Diu"),
+    ("Delhi", "Delhi"),
+    ("Jammu and Kashmir", "Jammu and Kashmir"),
+    ("Ladakh", "Ladakh"),
+    ("Lakshadweep", "Lakshadweep"),
+    ("Puducherry", "Puducherry"),
+        ]
+    )
+    pincode = models.CharField(
+        max_length=6,
+        validators=[
+            RegexValidator(r'^\d{6}$', message="PIN code must be 6 digits long.")
+        ],
+        help_text="6-digit PIN code"
+    )
+    country = models.CharField(
+        max_length=100, default="India", editable=False, help_text="Country name"
+    )
+    is_default = models.BooleanField(
+        default=False, help_text="Set as the default address"
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        unique_together = ('user', 'pincode', 'address_line1', 'address_line2')
 
     def __str__(self):
-        return f"{self.full_name}, {self.city}, {self.state}"
-    
-    
+        return f"{self.full_name}, {self.address_line1}, {self.city}, {self.state} - {self.pincode}"
+
 class Order(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    address = models.TextField()
+    order_date = models.DateTimeField(auto_now_add=True)
     total_amount = models.DecimalField(max_digits=10, decimal_places=2)
-    status = models.CharField(max_length=20, default="PENDING")
+    status = models.CharField(max_length=20, choices=[('PENDING','Pending'),('COMPLETED','Completed')])
+    razorpay_order_id = models.CharField(max_length=255)
+    address = models.ForeignKey(Address, on_delete=models.CASCADE, null=True, blank=True, related_name="orders")
 
     def __str__(self):
-        return f"Order {self.id} - {self.user.username}"
-
-class Payment(models.Model):
-    order = models.OneToOneField(Order, on_delete=models.CASCADE, related_name="order_payment")
-    razorpay_order_id = models.CharField(max_length=100)
-    status = models.CharField(max_length=20, default="PENDING")
-
-    def __str__(self):
-        return f"Payment for Order {self.order.id}"
-
-class PaymentAttempt(models.Model):
-    payment = models.ForeignKey(Payment, on_delete=models.CASCADE)
-    razorpay_payment_id = models.CharField(max_length=100, null=True, blank=True)
-    razorpay_signature = models.CharField(max_length=255, null=True, blank=True)
-    status = models.CharField(max_length=20)
-    failure_reason = models.TextField(null=True, blank=True)
-
-    def __str__(self):
-        return f"Payment Attempt for Payment {self.payment.id}"
-
+        return f"Order #{self.id} for {self.user.username}"
+    
 class OrderDetails(models.Model):
-    order = models.ForeignKey(Order, on_delete=models.CASCADE)
-    product_name = models.CharField(max_length=255)
+    order = models.ForeignKey(Order, related_name="order_details", on_delete=models.CASCADE)
+    order_item = models.ForeignKey(Product, on_delete=models.CASCADE)
     quantity = models.PositiveIntegerField()
     price = models.DecimalField(max_digits=10, decimal_places=2)
 
     def __str__(self):
-        return f"{self.product_name} - {self.order.id}"
-
-@login_required
-def create_razorpay_order(request, order_id):
-    """Create a Razorpay order and render the checkout page."""
-    order = get_object_or_404(Order, id=order_id, user=request.user)
-
-    # Ensure an address is already selected
-    if not order.address:
-        return redirect('select_address_for_order', order_id=order.id)
-
-    # Create a Razorpay Order
-    razorpay_order_data = {
-        "amount": int(order.total_amount * 100),  # Convert to paisa
-        "currency": "INR",
-        "receipt": f"order_rcpt_{order.id}",
-        "payment_capture": 1,
-    }
-    razorpay_order = client.order.create(data=razorpay_order_data)
-
-    # Save Razorpay order details in the Payment model
-    payment, created = Payment.objects.update_or_create(
-        order=order,
-        defaults={
-            "razorpay_order_id": razorpay_order["id"],
-            "status": "PENDING",
-        }
-    )
-
-    # Pass Razorpay and order details to the template
-    context = {
-        "order": order,
-        "razorpay_order": razorpay_order,
-        "key_id": settings.RAZORPAY_KEY_ID,
-        "addresses": Address.objects.filter(user=request.user),
-    }
-    return render(request, "checkout.html", context)
-
-@csrf_exempt
-def payment_success(request):
-    """Handle the Razorpay payment success callback."""
-    razorpay_order_id = request.POST.get("razorpay_order_id")
-    razorpay_payment_id = request.POST.get("razorpay_payment_id")
-    razorpay_signature = request.POST.get("razorpay_signature")
-
-    try:
-        # Verify Razorpay signature
-        client.utility.verify_payment_signature({
-            "razorpay_order_id": razorpay_order_id,
-            "razorpay_payment_id": razorpay_payment_id,
-            "razorpay_signature": razorpay_signature,
-        })
-
-        # Fetch the payment and order
-        payment = get_object_or_404(Payment, razorpay_order_id=razorpay_order_id)
-        order = payment.order
-
-        # Update Payment Attempt
-        PaymentAttempt.objects.create(
-            payment=payment,
-            razorpay_payment_id=razorpay_payment_id,
-            razorpay_signature=razorpay_signature,
-            status="SUCCESS",
-        )
-
-        # Mark Payment and Order as Completed
-        payment.status = "COMPLETED"
-        payment.save()
-        order.status = "COMPLETED"
-        order.save()
-
-        return render(request, "success.html", {"order": order})
-
-    except razorpay.errors.SignatureVerificationError:
-        # Fetch the payment and order
-        payment = get_object_or_404(Payment, razorpay_order_id=razorpay_order_id)
-        PaymentAttempt.objects.create(
-            payment=payment,
-            razorpay_payment_id=razorpay_payment_id,
-            razorpay_signature=razorpay_signature,
-            status="FAILED",
-            failure_reason="Signature verification failed",
-        )
-
-        payment.status = "FAILED"
-        payment.save()
-        return render(request, "failure.html", {"error": "Payment verification failed!"})
-
-@csrf_exempt
-def payment_failure(request):
-    """Handle payment failure callback."""
-    razorpay_order_id = request.POST.get("razorpay_order_id")
-    razorpay_payment_id = request.POST.get("razorpay_payment_id", None)
-    failure_reason = request.POST.get("error_description", "Unknown error")
-
-    # Fetch the payment and order
-    payment = get_object_or_404(Payment, razorpay_order_id=razorpay_order_id)
-
-    # Record the failed payment attempt
-    PaymentAttempt.objects.create(
-        payment=payment,
-        razorpay_payment_id=razorpay_payment_id,
-        status="FAILED",
-        failure_reason=failure_reason,
-    )
-
-    payment.status = "FAILED"
-    payment.save()
-
-    return render(request, "failure.html", {"error": failure_reason})
-
+        return f"Detail for order {self.order.id} - Product: {self.cart_item.product.name}"
+    
+    

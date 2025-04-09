@@ -1,30 +1,87 @@
+/* Reset default spacing and set box model */
 * {
-    padding: 0;
     margin: 0;
+    padding: 0;
     box-sizing: border-box;
 }
 
-body
-{
-    header {
-        height: 50px;
-
-        nav {
-            height: 100%;
-
-            div,
-            container-fluid {
-                height: 100%;
-                border-radius: 10;
-            }
-        }
-    }
+/* Body and text styling */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f8f9fa;
+    color: #e8b11bf3;
 }
+
+/* Header/Nav */
+header {
+    height: 60px;
+    box-shadow: 0 4px 6px rgba(156, 136, 8, 0.87);
+    z-index: 1000;
+}
+
+.navbar {
+    height: 100%;
+    border-radius: 10px;
+}
+
+/* Ensure navbar content fills height */
+.navbar .container-fluid {
+    height: 100%;
+    padding: 0 1rem;
+}
+
+/* Main Content */
 main {
     padding: 20px;
-    margin-top: 50px;
+    margin-top: 80px;
+    min-height: calc(100vh - 160px); /* Adjust for header/footer */
 }
-.container-fluid {
-    padding: 0;
-    
+
+/* Footer */
+footer {
+    height: 60px;
+    font-size: 0.9rem;
+    padding-top: 1rem;
+    box-shadow: 0 -2px 6px rgba(0, 0, 0, 0.05);
+}
+
+/* Buttons */
+.btn-outline-light:hover,
+.btn-outline-success:hover {
+    transform: scale(1.03);
+    transition: 0.2s ease-in-out;
+}
+
+/* Product Cards */
+.card {
+    transition: transform 0.2s ease-in-out, box-shadow 0.3s;
+    border: none;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+/* Navbar brand image spacing */
+.navbar-brand img {
+    border-radius: 6px;
+}
+
+/* Social icons in footer */
+footer a {
+    color: #ccc;
+    text-decoration: none;
+    transition: color 0.3s;
+}
+
+footer a:hover {
+    color: #fff;
+}
+.card-img-top {
+    height: 200px;
+    object-fit: cover;
+    width: 100%;
+    border-top-left-radius: 0.5rem;
+    border-top-right-radius: 0.5rem;
 }

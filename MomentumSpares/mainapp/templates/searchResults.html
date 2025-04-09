@@ -1,38 +1,46 @@
 {% extends "base.html" %}
 
 {% block title %}
-Search |{{query}}
+Search | {{ query }}
 {% endblock %}
 
 {% block content %}
+<div class="container py-5">
+    <h3 class="mb-4 text-center text-primary">Search Results for "<span class="text-dark">{{ query }}</span>"</h3>
 
-<h2>Search Results for {{query}}</h2>
-<div class="container-fluid">
-    <table class="table">
-        <thead>
-            <th>Id</th>
-            <th>Name</th>
-            <th>Price</th>
-            <th>Description</th>
-            <th>Pic path</th>
-            <th>Thumbnail</th>
-            <th>Stock</th>
-        </thead>
+    {% if items %}
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
         {% for product in items %}
-            <tr>
-                <td>{{product.id}}</td>
-                <td>
-                    <a href="{% url 'product_details' product.id %}">
-                        {{product.name}}
-                    </a>
-                </td>
-                <td>{{product.price}}</td>
-                <td>{{product.desc}}</td>
-                <td>{{product.pic.url}}</td>
-                <td><img src = "{{product.pic.url}}" height="20px" alt="image not found"></td>
-                <td>{{product.stock}}</td>
-            </tr>
-        {%endfor%}
-    </table>
+        <div class="col">
+            <div class="card h-100 shadow-sm">
+                <img src="{{ product.pic.url }}" class="card-img-top" alt="{{ product.name }}" style="height: 200px; object-fit: cover;">
+                <div class="card-body d-flex flex-column">
+                    <h5 class="card-title">{{ product.name }}</h5>
+                    <p class="card-text text-muted">{{ product.desc|truncatechars:70 }}</p>
+                    <p class="mb-1"><strong>₹{{ product.price }}</strong></p>
+                    <p>
+                        {% if product.stock > 0 %}
+                            <span class="badge bg-success">In Stock</span>
+                        {% else %}
+                            <span class="badge bg-danger">Out of Stock</span>
+                        {% endif %}
+                    </p>
+                    <div class="mt-auto">
+                        <a href="{% url 'product_details' product.id %}" class="btn btn-outline-primary w-100 mb-2">View Details</a>
+                        <a href="{% url 'add_to_cart' product.id %}" class="btn btn-success w-100">Add to Cart</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <p class="text-center text-muted mt-5">No products found matching your search.</p>
+    {% endif %}
 </div>
-{%endblock%}
+<form method="GET" action="{% url 'search_view' %}" class="d-flex justify-content-center mb-4">
+    <input type="text" name="query" class="form-control w-50" placeholder="Search for products..." value="{{ query }}">
+    <button type="submit" class="btn btn-primary ms-2">Search</button>
+</form>
+
+{% endblock %}

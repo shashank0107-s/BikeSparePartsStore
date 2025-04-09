@@ -1,13 +1,36 @@
-<!-- filepath: d:\PROJECTS\Bike-spare-parts-Project\MomentumSpares\mainapp\templates\about.html -->
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>About</title>
-</head>
-<body>
-    <h1>About Us</h1>
-    <p>Welcome to the About page!</p>
-</body>
-</html>
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}About Us - MomentumSpares{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="card shadow-lg p-4 border-0 rounded-4">
+        <h1 class="text-center mb-4 text-primary fw-bold">About MomentumSpares</h1>
+        
+        <p>
+            Welcome to <strong>MomentumSpares</strong> – your one-stop online destination for high-quality bike spare parts and accessories. Whether you're a passionate rider, a weekend warrior, or a mechanic looking for reliable components, we've got you covered.
+        </p>
+
+        <p>
+            At <strong>MomentumSpares</strong>, we understand the importance of performance, durability, and precision when it comes to your bike. That’s why we offer a carefully curated selection of genuine spare parts, custom upgrades, and essential gear to keep your ride smooth and safe.
+        </p>
+
+        <p>
+            Our mission is to make it easy for bikers to find the right parts without the hassle. With a user-friendly interface, secure checkout, and fast delivery, we bring the workshop to your fingertips.
+        </p>
+
+        <h4 class="mt-4 text-success fw-semibold">What We Offer</h4>
+        <ul class="list-group list-group-flush mb-4">
+            <li class="list-group-item">✔️ Authentic bike spare parts from trusted brands</li>
+            <li class="list-group-item">✔️ A wide range of accessories including helmets, lights, locks, and more</li>
+            <li class="list-group-item">✔️ Detailed product information to help you choose the right fit</li>
+            <li class="list-group-item">✔️ Dedicated support to assist you every step of the way</li>
+        </ul>
+
+        <p class="mb-0">
+            Join thousands of satisfied riders who trust <strong>MomentumSpares</strong> for their biking needs.
+            <span class="fw-semibold">Keep your momentum going — ride safe, ride strong.</span>
+        </p>
+    </div>
+</div>
+{% endblock %}

@@ -57,6 +57,12 @@ class AddProducts(CreateView):
     template_name = 'addproduct.html'
     success_url = reverse_lazy('homepage')  
 
+
+
+
+
+    
+
 #read - show details of  each product
 class ProductDetails(DetailView):
     model = Product
@@ -119,3 +125,5 @@ def view_cart(request):
     # Logic to retrieve cart items (e.g., from session or database)
     cart_items = []  # Replace with actual cart retrieval logic
     return render(request, 'cart.html', {'cart_items': cart_items})
+
+

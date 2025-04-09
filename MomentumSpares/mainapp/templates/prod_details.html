@@ -1,31 +1,44 @@
 {% extends 'base.html' %}
 
-
 {% block title %}
 {{ prod.name }}
 {% endblock %}
 
-
 {% block content %}
-<div class="row">
-    <div class="col-sm-6 ">
-        <img src="{{prod.pic.url}}" class="w-100 h-100" alt="">
-    </div>
-    <div class="col-sm-6">
-        <div class="row">
-            <h1>{{ prod.name }}</h1>
-            <p>Rs.{{ prod.price }}</p>
-        </div>
-        <div class="row">
-            {% if user.is_staff %}
-            <a href="{% url 'edit_prod' prod.pk %}" class="btn btn-secondary">Edit Product</a>
-            <a href="{% url 'del_prod' prod.pk %}" class="btn btn-danger">Delete Product</a>
-            {% else %}
-            <a href="#" class="btn btn-danger">Add to Cart</a>
-            {% endif %}
+<div class="container py-5">
+    <div class="row g-4 align-items-center">
+        <!-- Product Image -->
+        <div class="col-md-6">
+            <img src="{{ prod.pic.url }}" alt="{{ prod.name }}" class="img-fluid rounded shadow-sm w-100" style="max-height: 450px; object-fit: contain;">
         </div>
 
-    </div>
+        <!-- Product Info -->
+        <div class="col-md-6">
+            <h2 class="mb-3 text-primary">{{ prod.name }}</h2>
+            <h4 class="mb-3 text-success">₹{{ prod.price }}</h4>
+            <p class="mb-4 text-muted">{{ prod.desc }}</p>
+            <p>
+                {% if prod.stock > 0 %}
+                    <span class="badge bg-success">In Stock: {{ prod.stock }}</span>
+                {% else %}
+                    <span class="badge bg-danger">Out of Stock</span>
+                {% endif %}
+            </p>
 
+            <!-- Actions -->
+            <div class="d-flex gap-3 mt-4">
+                {% if user.is_staff %}
+                    <a href="{% url 'edit_prod' prod.pk %}" class="btn btn-outline-secondary">Edit Product</a>
+                    <a href="{% url 'del_prod' prod.pk %}" class="btn btn-outline-danger">Delete Product</a>
+                {% else %}
+                    {% if prod.stock > 0 %}
+                        <a href="{% url 'add_to_cart' prod.pk %}" class="btn btn-primary">Add to Cart</a>
+                    {% else %}
+                        <button class="btn btn-secondary" disabled>Out of Stock</button>
+                    {% endif %}
+                {% endif %}
+            </div>
+        </div>
+    </div>
 </div>
 {% endblock %}

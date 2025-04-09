@@ -6,6 +6,7 @@
 {% endblock %}
 
 {% block content %}
+{{ field|add_class:"form-control" }}
 
 <div class="container-fluid ">
     {% if cart_items %}
@@ -54,6 +55,13 @@
                     <button onclick="updateCart('{% url 'add_quantity' item.id %}', {{ item.id }}, true, '{{ csrf_token }}')" class="btn btn-outline-secondary col align-middle">+</button>
                     </div>
                 </td>
+                <div class="text-center mt-3">
+                    <small>
+                        Don't have an account? <a href="{% url 'signup' %}">Sign up</a><br>
+                        <a href="{% url 'password_reset' %}">Forgot password?</a>
+                    </small>
+                </div>
+                
                 <td id="total-price-{{ item.id }}">
                     {{item.get_total_price}}
                 </td>

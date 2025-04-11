@@ -1,95 +1,74 @@
 {% extends 'base.html' %}
-{% load custom_filters %}
-
+{% load static %}
 {% block title %}
-{{user}}'s Cart
-
+{{ user }}'s Cart
 {% endblock %}
 
 {% block content %}
-<form method="post">
-    {% csrf_token %}
-    {{ form.field_name|add_class:"form-control" }}
-</form>
+<div class="container my-5">
+    <h2 class="mb-4 text-center">{{ user }}'s Shopping Cart</h2>
 
-{{ field|add_class:"form-control" }}
-
-<div class="container-fluid ">
     {% if cart_items %}
-
-    <table class="table table-dark ">
-        <thead >
-            <th>
-    
-            </th>
-            <th>
-                Product
-            </th>
-            <th>
-                Price
-            </th>
-            <th>
-                Quantity
-            </th>
-            <th>
-                Sub Total
-            </th>
-            <th>
-    
-            </th>
-        </thead>
-        <tbody>
-            {% for item in cart_items %}
-            <tr class="h-10" id="cart-item-{{item.id}}">
-                <td class="w-auto">
-                    {% if item.product.pic %}
-                        <img src="{{item.product.pic.url}}" height="20px" alt="An image of {{item.product.name}}">
-                    {% endif %}
-                </td>
-                <td>
-                    <a href="{% url 'prod_details' item.product.id %}">{{item.product.name }}</a>
-                </td>
-                <td>
-                    {{item.product.price}}
-                </td>
-                <td class="grid">
-                    <div class="row w-100">            
-                    <button onclick="updateCart('{% url 'rem_quantity' item.id %}', {{ item.id }}, false, '{{ csrf_token }}')" class="btn btn-outline-secondary col align-middle">
-                        -
-                    </button>
-                        <p id="quantity-{{ item.id }}" class="col align-middle text-center">{{item.quantity}}</p>
-                    <button onclick="updateCart('{% url 'add_quantity' item.id %}', {{ item.id }}, true, '{{ csrf_token }}')" class="btn btn-outline-secondary col align-middle">+</button>
-                    </div>
-                </td>
-                <div class="text-center mt-3">
-                    <small>
-                        Don't have an account? <a href="{% url 'signup' %}">Sign up</a><br>
-                        <a href="{% url 'password_reset' %}">Forgot password?</a>
-                    </small>
-                </div>
-                
-                <td id="total-price-{{ item.id }}">
-                    {{item.get_total_price}}
-                </td>
-                <td>
-                    <a href="{% url 'remove_from_cart' item.id %}" class="btn btn-danger">Remove from Cart</a>
-                </td>
-            </tr>
-            {% endfor %}
-            <tr>
-                <th colspan="4" class="text-center text-warning bg-dark">Total</th>
-                <td class="bg-secondary"><strong>Rs.<span id="overall-total">{{ total_price }}</span></strong></td>
-                <td><a href="{% url 'create_order' %}" class="btn btn-primary">Place Your Order</a></td>
-            </tr>
-        </tbody>
-    </table>
-    
-    {% else %}
-    Cart is Empty!!!
-    {% endif %}
-    <div class="text-center">
-        <a href="{% url 'homepage' %}" class="btn btn-primary">Shop more !!!</a>
+    <div class="table-responsive">
+        <table class="table table-bordered align-middle text-center">
+            <thead class="table-dark">
+                <tr>
+                    <th>Image</th>
+                    <th>Product</th>
+                    <th>Price (Rs.)</th>
+                    <th>Quantity</th>
+                    <th>Sub Total</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in cart_items %}
+                <tr id="cart-item-{{ item.id }}">
+                    <td>
+                        {% if item.product.pic %}
+                            <img src="{{ item.product.pic.url }}" alt="{{ item.product.name }}" class="img-fluid rounded" style="height: 60px;">
+                        {% endif %}
+                    </td>
+                    <td>
+                        <a href="{% url 'prod_details' item.product.id %}" class="text-decoration-none">{{ item.product.name }}</a>
+                    </td>
+                    <td>Rs. {{ item.product.price|floatformat:2 }}</td>
+                    <td>
+                        <div class="d-flex justify-content-center align-items-center gap-2">
+                            <button onclick="updateCart('{% url 'rem_quantity' item.id %}', {{ item.id }}, false, '{{ csrf_token }}')" class="btn btn-outline-secondary btn-sm">
+                                <strong>-</strong>
+                            </button>
+                            <span id="quantity-{{ item.id }}" class="px-2">{{ item.quantity }}</span>
+                            <button onclick="updateCart('{% url 'add_quantity' item.id %}', {{ item.id }}, true, '{{ csrf_token }}')" class="btn btn-outline-secondary btn-sm">
+                                <strong>+</strong>
+                            </button>
+                        </div>
+                    </td>
+                    <td id="total-price-{{ item.id }}">Rs. {{ item.get_total_price|floatformat:2 }}</td>
+                    <td>
+                        <a href="{% url 'rem_from_cart' item.id %}" class="btn btn-danger btn-sm">Remove</a>
+                    </td>
+                </tr>
+                {% endfor %}
+                <tr class="table-secondary">
+                    <td colspan="4" class="text-end fw-bold">Total:</td>
+                    <td colspan="2" class="text-start fw-bold text-primary">Rs. <span id="overall-total">{{ total_price|floatformat:2 }}</span></td>
+                </tr>
+            </tbody>
+        </table>
     </div>
-</div>
 
+    <div class="text-center my-4">
+        <a href="{% url 'create_order' %}" class="btn btn-success btn-lg me-3">Place Your Order</a>
+        <a href="{% url 'homepage' %}" class="btn btn-outline-primary btn-lg">Shop More</a>
+    </div>
+    {% else %}
+    <div class="alert alert-info text-center">
+        Your cart is currently empty.
+    </div>
+    <div class="text-center mt-4">
+        <a href="{% url 'homepage' %}" class="btn btn-primary btn-lg">Start Shopping</a>
+    </div>
+    {% endif %}
+</div>
 {% endblock %}

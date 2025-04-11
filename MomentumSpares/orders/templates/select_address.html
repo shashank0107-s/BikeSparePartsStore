@@ -1,42 +1,29 @@
 {% extends 'base.html' %}
 
 {% block title %}
-    Select Address
+
 {% endblock %}
 
 {% block content %}
-<div class="container mt-4">
-    <form method="post" class="card p-4 shadow-sm">
-        {% csrf_token %}
-        <h3 class="mb-3">Select an Address</h3>
 
-        {% if addresses %}
-            <div class="list-group mb-3">
-                {% for address in addresses %}
-                    <label class="list-group-item d-flex align-items-start">
-                        <input 
-                            type="radio" 
-                            name="address" 
-                            value="{{ address.id }}" 
-                            class="form-check-input me-2 mt-1"
-                            {% if forloop.first %}checked{% endif %}>
-                        <div>
-                            {{ address.street }}, {{ address.city }}, {{ address.state }}
-                        </div>
-                    </label>
-                {% endfor %}
-            </div>
+{% if addresses %}
+<form method="post">
+    {% csrf_token %}
+    <h3>Select an Address</h3>
+    <ul>
+        {% for address in addresses %}
+        <li>
+            <label>
+                <input type="radio" name="address" value="{{ address.id }}">
+                {{ address.full_name }}, {{ address.address_line1 }}, {{ address.city }}, {{ address.state }} - {{ address.pincode }}
+            </label>
+        </li>
+        {% endfor %}
+    </ul>
+    <button type="submit" class="btn btn-primary">Select Address</button>
+</form>
+{% endif %}
+<a href="{% url 'add_address'  %}?next={{request.path}}" class="btn btn-secondary">Add address</a>
 
-            <button type="submit" class="btn btn-primary">Proceed to Payment</button>
-        {% else %}
-            <p class="text-muted">No saved addresses. Please add one below.</p>
-        {% endif %}
-    </form>
 
-    <div class="mt-3">
-        <a href="{% url 'add_address' %}?next={{ request.path }}" class="btn btn-secondary">
-            Add Address
-        </a>
-    </div>
-</div>
 {% endblock %}

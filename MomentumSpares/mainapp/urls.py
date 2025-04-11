@@ -1,14 +1,17 @@
 from django.urls import path
-from . import views
+
+from .views import homeView, aboutView, AddProduct, ProductDetails, UpdateProduct, DeleteProduct, searchView
+# importing the views from the mainapp to access the functions
 
 urlpatterns = [
-    path('', views.home, name='homepage'),  # Home view
-    path('about/', views.about, name='aboutpage'),  # About view
-    path('products/<int:pk>', views.ProductDetails.as_view(), name='prod_details'),  # R
-    path('products/add', views.AddProducts.as_view(), name='addproduct'),  # C
-    path('products/edit/<int:pk>', views.UpdateProducts.as_view(), name='edit_prod'),  # U
-    path('products/delete/<int:pk>', views.DeleteProducts.as_view(), name='del_prod'),  # D
-    path('products/search', views.searchView, name='search'),  # Search path
-    path('cart/add/<int:product_id>/', views.add_to_cart, name='add_to_cart'),  # Add to cart
-    path('cart/', views.view_cart, name='view_cart'),  # View cart
+    path("", homeView, name='homepage'),
+    path("about", aboutView, name="aboutpage"),
+
+    path('products/add',            AddProduct.as_view(),     name='add_prod'),       # C
+    path('products/<int:pk>',       ProductDetails.as_view(), name='prod_details'),   # R
+    path('products/edit/<int:pk>',  UpdateProduct.as_view(),  name = 'edit_prod'),    # U 
+    path('products/del/<int:pk>',   DeleteProduct.as_view(),  name = 'del_prod'),     # D
+
+    # Search path
+    path('products/search', searchView, name = 'search')
 ]

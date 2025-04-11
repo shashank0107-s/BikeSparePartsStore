@@ -16,22 +16,23 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from django.conf import settings
+from cart import views  # Import the views module from the cart app
+
+# adding this line to support hosting of static files
 from django.conf.urls.static import static
+from django.conf import settings
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', include('mainapp.urls')),  # Include the mainapp URLs
-    path('auth/', include('authentication.urls')),
-    
-    path('cart/',include('cart.urls')),
-    path('orders/',include('orders.urls')),
-    path('payments/',include('payments.urls')),
-    
-    path('auth/',include('django.contrib.auth.urls')), # to include the paths configured in the app,here  # Include the authentication URLs
-]
+    path('', include('mainapp.urls')), # to include the paths configured in the app, here
+    path('', include('cart.urls')),
+    path('', include('payments.urls')),
+    path('auth/', include('authentication.urls')), # including our authentication app urls
+    path('auth/', include('django.contrib.auth.urls')), # including django's inbuilt auth urls
+    path('orders/', include('orders.urls')),  # Ensure this is unique
+     path('payments/',include('payments.urls')),  # Reference the checkout view   
+    ]
 
-# Add static and media file handling
-if settings.DEBUG:
-    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+# the following line allows us to use the given media path during development
+if settings.DEBUG == True:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

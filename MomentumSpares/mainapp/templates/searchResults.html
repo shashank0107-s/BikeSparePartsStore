@@ -1,46 +1,55 @@
-{% extends "base.html" %}
+{% extends 'base.html' %}
 
 {% block title %}
 Search | {{ query }}
 {% endblock %}
 
 {% block content %}
-<div class="container py-5">
-    <h3 class="mb-4 text-center text-primary">Search Results for "<span class="text-dark">{{ query }}</span>"</h3>
+<div class="container my-5">
+    <h3 class="mb-4">Search Results for <span class="text-primary">"{{ query }}"</span></h3>
 
-    {% if items %}
-    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
-        {% for product in items %}
-        <div class="col">
-            <div class="card h-100 shadow-sm">
-                <img src="{{ product.pic.url }}" class="card-img-top" alt="{{ product.name }}" style="height: 200px; object-fit: cover;">
-                <div class="card-body d-flex flex-column">
-                    <h5 class="card-title">{{ product.name }}</h5>
-                    <p class="card-text text-muted">{{ product.desc|truncatechars:70 }}</p>
-                    <p class="mb-1"><strong>₹{{ product.price }}</strong></p>
-                    <p>
-                        {% if product.stock > 0 %}
-                            <span class="badge bg-success">In Stock</span>
-                        {% else %}
-                            <span class="badge bg-danger">Out of Stock</span>
-                        {% endif %}
-                    </p>
-                    <div class="mt-auto">
-                        <a href="{% url 'product_details' product.id %}" class="btn btn-outline-primary w-100 mb-2">View Details</a>
-                        <a href="{% url 'add_to_cart' product.id %}" class="btn btn-success w-100">Add to Cart</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        {% endfor %}
+    <div class="table-responsive">
+        <table class="table table-bordered table-hover align-middle shadow-sm" data-bs-theme="dark">
+            <thead class="table-dark text-center">
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Price</th>
+                    <th>Pic Path</th>
+                    <th>Thumbnail</th>
+                    <th>Stock</th>
+                    <th>Description</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for product in items %}
+                <tr>
+                    <td class="text-center">{{ product.id }}</td>
+                    <td>
+                        <a href="{% url 'prod_details' product.id %}" class="text-info fw-semibold text-decoration-none">
+                            {{ product.name }}
+                        </a>
+                    </td>
+                    <td>₹ {{ product.price }}</td>
+                    <td class="text-muted small">{{ product.pic.url }}</td>
+                    <td>
+                        <img src="{{ product.pic.url }}" alt="Thumbnail" class="img-thumbnail" style="height: 60px;">
+                    </td>
+                    <td>{{ product.stock }}</td>
+                    <td class="text-wrap" style="max-width: 250px;">{{ product.desc }}</td>
+                    <td>
+                        <a href="{% url 'add_to_cart' product.id %}" class="btn btn-success btn-sm">Add to Cart</a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="8" class="text-center text-muted">No results found for "{{ query }}".</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
     </div>
-    {% else %}
-    <p class="text-center text-muted mt-5">No products found matching your search.</p>
-    {% endif %}
 </div>
-<form method="GET" action="{% url 'search_view' %}" class="d-flex justify-content-center mb-4">
-    <input type="text" name="query" class="form-control w-50" placeholder="Search for products..." value="{{ query }}">
-    <button type="submit" class="btn btn-primary ms-2">Search</button>
-</form>
-
 {% endblock %}

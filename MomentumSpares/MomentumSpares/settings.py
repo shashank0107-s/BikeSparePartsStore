@@ -20,7 +20,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-y@it!xqc1__-ye*kk$p1o305-n*a06rz#uafl_-_*e)+e*$*_5'
+SECRET_KEY = 'django-insecure-@gy*z&dpe_6lfi-i!irr!%t)988u9%eh#xeg%0ovn3k(*ui&@o'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -37,12 +37,12 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'mainapp', #include every new app here
+    'mainapp', # include every new app here
     'authentication',
     'cart',
     'orders',
     'payments',
-    'widget_tweaks',
+    
 ]
 
 MIDDLEWARE = [
@@ -58,18 +58,16 @@ MIDDLEWARE = [
 ROOT_URLCONF = 'MomentumSpares.urls'
 
 TEMPLATES = [
-    
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [],  # Add custom template directories here if needed
-        'APP_DIRS': True,  # This must be True to load templates from app directories
+        'APP_DIRS': True,  # Ensure this is set to True
         'OPTIONS': {
             'context_processors': [
                 'django.template.context_processors.debug',
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-                
             ],
         },
     },
@@ -113,7 +111,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'Asia/Kolkata'  # Change to your local time zone
+TIME_ZONE = 'UTC'
 
 USE_I18N = True
 
@@ -123,28 +121,40 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
-STATIC_URL = '/static/'
-STATICFILES_DIRS = [BASE_DIR / "static"]  # Optional: Add your static files directory
-STATIC_ROOT = BASE_DIR / "staticfiles"  # For `collectstatic`
+STATIC_URL = 'static/'
+STATICFILES_DIRS = [
+    BASE_DIR / 'static'
+]
 
-# Media files (Uploaded files)
-MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR / "media"
+# configuring the user-uploaded media storage location
+# in development server, we are going to use a local folder inside the project 
+# to store the media. When deploying, we can replace the filepath 
+# with a url to the media server
+
+MEDIA_ROOT = BASE_DIR/'media'
+MEDIA_URL = '/'
+
+
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# authentication configs
 LOGIN_URL = 'signin'
 LOGOUT_REDIRECT_URL = 'homepage'
 LOGIN_REDIRECT_URL = 'homepage'
 
+
 # Razorpay configs
 
-RAZORPAY_KEY_ID = "rzp_test_i9f7yZ0hBdy9d3"  # Replace with your Key ID
-RAZORPAY_KEY_SECRET = "TYlF7oiBO8sA4Jx0zML9kVsv"  # Replace with your Key Secret
+RAZORPAY_KEY_ID = "rzp_test_IvhcHeoNovUUfT"  # Replace with your Key ID
+RAZORPAY_KEY_SECRET = "6gzyH5ZmRLlgSFOzWjzrUgd7"
 
 
 CSRF_TRUSTED_ORIGINS = [
     'https://api.razorpay.com',  # Add Razorpay's domain
 ]
+TIME_ZONE = 'Asia/Kolkata'  # Change to your local time zone
+USE_TZ = True

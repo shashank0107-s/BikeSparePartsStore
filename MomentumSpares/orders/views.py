@@ -77,12 +77,22 @@ def add_address(request):
 @login_required
 def select_address_for_order(request, order_id):
     """Allow the user to select an address for the order and proceed to payment."""
-    addresses = Address.objects.filter(user=request.user)  # Ensure user-specific filtering
-    if request.method == "POST":
-        selected_address_id = request.POST.get("address")
-        selected_address = get_object_or_404(Address, id=selected_address_id, user=request.user)
-        # Proceed with the order logic
-    return render(request, "select_address.html", {"addresses": addresses})
+    order = get_object_or_404(Order, id=order_id, user=request.user)
+    addresses = request.user.addresses.all()
+
+    if request.method == 'POST':
+        # Get the selected address ID from the form
+        address_id = request.POST.get('address')
+        address = get_object_or_404(Address, id=address_id, user=request.user)
+        
+        # Associate the selected address with the order
+        order.address = address
+        order.save()
+        
+        # Redirect to the Razorpay order creation and payment page
+        return redirect('payment:create_razorpay_order', order_id=order.id)
+
+    return render(request, 'select_address.html', {'order': order, 'addresses': addresses})
 
 @login_required
 def update_order(request, order_id):
@@ -111,7 +121,4 @@ def cancel_order(request, order_id):
     else:
         messages.error(request, "This order cannot be cancelled.")
 
-    return redirect("homepage")
-
-from orders.models import Address
-Address.objects.filter(user__username="your_username")
+    return redirect("homepage") 

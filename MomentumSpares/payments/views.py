@@ -122,3 +122,4 @@ def payment_failure(request):
 
     return render(request, "failure.html", {"error": failure_reason})
 
+
